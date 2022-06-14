@@ -30,12 +30,16 @@ def update_transition_probabilities(source_file):
       cs1 = c_row["Colour Status"][1]
       pcs = "_"
       pcs1 = "_"
-      if (cs == 'Red'):
+      if (cs1 == 'Red'):
           rd = 1
       else:
         rd = 0
       rtb = 0
-      counts_df.loc[x] = [cs,cs1,pcs,pcs1,rd,rtb]
+      if (cs1 == 'Black' ):
+        bd = 1
+      else:
+        bd = 0
+      counts_df.loc[x] = [cs,cs1,pcs,pcs1,rd,rtb,bd]
     else:
       c_row = df1_reg_norm.loc[x, df1_reg_norm.columns]
       count_row = (counts_df.loc[x, counts_df.columns])
@@ -49,6 +53,10 @@ def update_transition_probabilities(source_file):
       (count_row)["Prev Colour Status.1"] = count_row["Colour Status.1"]
       (count_row)["Colour Status"] = c_row["Colour Status"][0]
       (count_row)["Colour Status.1"] = c_row["Colour Status"][1]
+      if (c_row["Colour Status"][1] == "Black"):
+        (count_row)["Continious Black"] += 1
+      else:
+        (count_row)["Continious Black"] = 0
       '''
       if (c_row["Colour Status"][1] == 'Red'):
         (counts_df.loc[x]['Red Days']) += 1
@@ -64,5 +72,6 @@ def update_transition_probabilities(source_file):
         print("fuck")
   transition_probabilities = counts_df.apply(lambda row: calc(row), axis=1)
   transition_probabilities.to_csv('transition_prob.csv')
+  (counts_df["Continious Black"]).to_csv('continious_black.csv')
   print(sum)
   return counts_df;
